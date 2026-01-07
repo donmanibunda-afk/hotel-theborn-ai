@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+fFimport React, { useState, useEffect, useRef } from 'react';
 import { INITIAL_SUGGESTIONS, APP_NAME } from './constants';
 import { sendMessageStream, setApiKey, startChatSession } from './services/gemini';
 import MarkdownRenderer from './components/MarkdownRenderer';
@@ -58,7 +58,7 @@ const readFileAsBase64 = (file: File): Promise<string> => {
 
 const App: React.FC = () => {
   // Navigation State
-  const [hasStarted, setHasStarted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(true);
   
   // Data State
   const [messages, setMessages] = useState<Message[]>([
@@ -70,7 +70,10 @@ const App: React.FC = () => {
     },
   ]);
   const [inputText, setInputText] = useState('');
-  const [inputKey, setInputKey] = useState('');
+  const [inputKey, setInputKey] = useState(
+  import.meta.env.VITE_GEMINI_API_KEY || ''
+);
+
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
   
@@ -83,10 +86,21 @@ const App: React.FC = () => {
 
   // Check API Key on mount (if env var exists)
   useEffect(() => {
-    if (process.env.API_KEY) {
-      setInputKey(process.env.API_KEY);
+  const autoInit = async () => {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (apiKey) {
+      try {
+        setInputKey(apiKey);
+        setApiKey(apiKey);
+        await startChatSession('');
+        setHasStarted(true);
+      } catch (error) {
+        console.error('Auto init failed:', error);
+      }
     }
-  }, []);
+  };
+  autoInit();
+}, []);
 
   useEffect(() => {
     scrollToBottom();
