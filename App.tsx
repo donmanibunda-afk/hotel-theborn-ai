@@ -1,4 +1,4 @@
-fFimport React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { INITIAL_SUGGESTIONS, APP_NAME } from './constants';
 import { sendMessageStream, setApiKey, startChatSession } from './services/gemini';
 import MarkdownRenderer from './components/MarkdownRenderer';
